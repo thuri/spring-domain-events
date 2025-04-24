@@ -2,7 +2,6 @@ package net.lueckonline.spring.domainevents
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
-import jakarta.persistence.PostPersist
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreRemove
 import org.apache.logging.log4j.kotlin.logger
@@ -42,18 +41,5 @@ class ExampleEntity (
     override fun clearDomainEvents() {
         logger.info("Clearing domain events for $this")
         super.clearDomainEvents()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ExampleEntity
-
-        return id == other.id
-    }
-
-    override fun hashCode(): Int {
-        return id
     }
 }
