@@ -21,6 +21,7 @@ class ExampleEntity (
     // if we call this on a manually created entity the event is registered exactly that instance.
     // when the domainEvents are fetched during the save operation only the domain events of
     // the manually created object are fetched an passed on to the event handlers
+    @PrePersist
     fun addCreatedEvent() {
         logger.info("Adding created event for $this")
         this.registerEvent(ExampleCreated(this))

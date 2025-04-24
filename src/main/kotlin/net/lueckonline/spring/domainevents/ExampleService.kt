@@ -27,7 +27,7 @@ class ExampleService (
         val entityToSave = ExampleEntity(id, name)
         // if we don't call this directly but depend on the @PrePersist annotation
         // the created event is not evaluated during the save operation
-        entityToSave.addCreatedEvent()
+        //entityToSave.addCreatedEvent()
         logger.info("saving entity $entityToSave")
         val savedEntity = repository.saveAndFlush(entityToSave)
         logger.info("saved entity $savedEntity")
