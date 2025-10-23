@@ -11,3 +11,6 @@ interface BadEntityRepository : JpaRepository<BadEntity, Int>
 
 @Repository
 interface AssignedIdWorkaroundEntityRepository : JpaRepository<AssigendIdWorkaroundEntity, Int>
+
+@Repository
+interface AssignedIdWithVersionEntityRepository : JpaRepository<AssignedIdWithVersionEntity, Int>

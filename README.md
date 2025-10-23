@@ -25,16 +25,23 @@ The difference between the three entities is how the id fields gets it's value:
 
 * `BadEntity` - the id value is assigned by the calling code via it's constructor
 * `GeneratedIdEntity` - the id value is assigned by a sequence (could be another generator type)
-* `AssignedIdWorkaroundEntity` - the entity implements `Persistable` interface in order to tell Spring Data whether the 
-object represents a new database entry or not
+* `AssignedIdWorkaroundEntity` - the entity implements `Persistable` interface in order to tell Spring Data whether the
+  object represents a new database entry or not
+* `AssignedIdWithVersionEntity` - the entity defines a `@Version` attribute which is used to evaluate whether the entity 
+  is new or not
 
-The test works for the later two because Spring Data knows whether the object is new or not and doesn't need
-to create a completely different object when the `save` method is called on the repositories.
+The test works for the later three entities because Spring Data knows whether the object is new or not and
+can call the EntityManagers `persist` method. If it thinks that the entity is not new it calls the EntityManagers
+`merge` method.
 
-Because in case a new object is created the `PrePersist` handler is called on the object that is added to persistence
-context which is not the object that has been passed to the `save` method. But the domain events are only evaluated on
-the object that has been passed to the `save` method not the one that has been passed to `save`
+When it calls the `merge` method than the entity manager (hibernate) will handle the object as `DETACHED` object because
+it already has an Id and has no `@Version` annotation. It will then detect that the object has no corresponding row
+in the database and will handle it as a `TRANSIENT` entity. When doing this it will copy the object and return the copy
+instead of the passed object (`org.hibernate.event.internal.DefaultMergeEventListener`)
 
-I'm not quite sure when the `save` method will return another object than the passed one and that the domain events
-will always be executed on the correct object in all other circumstances but at least the Id generation and implementing 
-`Persistable` are a way in the wanted direction.
+It will then call the `PrePersist` eventhandler on the copy and not on the object that has been passed to the `save` 
+method. 
+
+But the `org.springframework.data.repository.core.support.EventPublishingRepositoryProxyPostProcessor.EventPublishingMethodInterceptor.invoke`
+method will fetch the domain events from the object passed to the save method. But that object has no registered 
+domain events and therefor no event listeners are called by Spring.
