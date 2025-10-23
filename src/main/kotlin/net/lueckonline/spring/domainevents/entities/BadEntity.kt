@@ -1,26 +1,25 @@
-package net.lueckonline.spring.domainevents
+package net.lueckonline.spring.domainevents.entities
 
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.PrePersist
 import jakarta.persistence.PreRemove
+import net.lueckonline.spring.domainevents.entities.ExampleEntity
+import net.lueckonline.spring.domainevents.events.ExampleCreated
+import net.lueckonline.spring.domainevents.events.ExampleRemoved
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.data.domain.AbstractAggregateRoot
 
 @Entity
-class ExampleEntity (
+class BadEntity(
     @Id
-    val id: Int,
+    var id: Int,
     val name: String
-) : AbstractAggregateRoot<ExampleEntity>() {
+) : AbstractAggregateRoot<BadEntity>(), ExampleEntity {
 
-    // @PrePersist - if the method is called as PrePersist handler, the event is
-    // registered on another instance of the entity - the one that is managed
-    // by JPA/hibernate and which is returned by the save method of the repository.
-    // if we call this on a manually created entity the event is registered exactly that instance.
-    // when the domainEvents are fetched during the save operation only the domain events of
-    // the manually created object are fetched an passed on to the event handlers
-//    @PrePersist
+    @PrePersist
     fun addCreatedEvent() {
         logger.info("Adding created event for $this")
         this.registerEvent(ExampleCreated(this))

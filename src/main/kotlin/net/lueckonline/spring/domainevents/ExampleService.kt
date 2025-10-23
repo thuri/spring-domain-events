@@ -1,6 +1,10 @@
 package net.lueckonline.spring.domainevents
 
 import jakarta.persistence.EntityManager
+import net.lueckonline.spring.domainevents.entities.BadEntity
+import net.lueckonline.spring.domainevents.entities.BadEntityRepository
+import net.lueckonline.spring.domainevents.events.ExampleCreated
+import net.lueckonline.spring.domainevents.events.ExampleRemoved
 import org.apache.logging.log4j.kotlin.logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
@@ -9,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ExampleService (
-    @Autowired val repository: ExampleRepository,
+    @Autowired val repository: BadEntityRepository,
     @Autowired val entityManager: EntityManager,
 ){
 
@@ -29,9 +33,9 @@ class ExampleService (
     }
 
 //    @Transactional
-    fun createExample(id: Int, name: String): ExampleEntity{
+    fun createExample(id: Int, name: String): BadEntity{
 
-        val entityToSave = ExampleEntity(id, name)
+        val entityToSave = BadEntity(id, name)
         // if we don't call this directly but depend on the @PrePersist annotation
         // the created event is not evaluated during the save operation
         entityToSave.addCreatedEvent()
@@ -42,7 +46,7 @@ class ExampleService (
     }
 
 //    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun deleteExample(example: ExampleEntity) {
+    fun deleteExample(example: BadEntity) {
         logger.info("deleting entity")
         logger.info("entitymanager contains entity to delete: ${entityManager.contains(example)}")
 //        example.addRemovedEvent()
@@ -51,12 +55,12 @@ class ExampleService (
     }
 
     @EventListener
-    fun handle(event: ExampleCreated){
+    fun handle(event: ExampleCreated) {
         logger.info("Example created")
     }
 
     @EventListener
-    fun handle(event: ExampleRemoved){
+    fun handle(event: ExampleRemoved) {
         logger.info("Example removed")
     }
 }
